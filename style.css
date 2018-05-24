@@ -1,0 +1,26 @@
+.info,.submit{
+    display:none;
+}
+.questionSet{
+
+cursor:pointer;
+border-bottom: 1px solid #dddddd;
+padding: 8px;
+}
+.selected{
+    font-weight:bold;
+}
+.question p,.options p{
+display:inline-block;
+}
+.question p:first-child,.options p:first-child{
+    width:15%;
+}
+.questionSet:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+.questionSet:nth-of-type(even) {
+    background-color: #ffffff;
+}
+
+

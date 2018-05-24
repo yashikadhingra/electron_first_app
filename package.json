@@ -1,0 +1,17 @@
+{
+  "name": "newapp",
+  "version": "1.0.0",
+  "description": "Test Generator desktop app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "yashika",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "electron": "^1.8.2",
+    "jquery": "^3.3.1",
+    "tether": "^1.4.3"
+  }
+}

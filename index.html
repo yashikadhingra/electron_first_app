@@ -1,0 +1,187 @@
+<DOCTYPE html>
+    <html>
+        <meta charset="UTF-8">
+        <title>First Page</title>
+        <head>
+                <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+                <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+        </head>
+        <body>
+                <div class="container">  
+                    <p id="usernme"></p>  
+                        <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
+                            <div class="panel panel-info" >
+                                    <div class="panel-heading">
+                                        <div class="panel-title">Sign In</div>
+                                        <div style="float:right; font-size: 80%; position: relative; top:-10px"><a href="#">Forgot password?</a></div>
+                                    </div>     
+                
+                                    <div style="padding-top:30px" class="panel-body" >
+                
+                                        <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
+                                            
+                                        <form id="loginform" class="form-horizontal" role="form">
+                                                    
+                                            <div style="margin-bottom: 25px" class="input-group">
+                                                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                                        <input id="login-email" type="text" class="form-control" name="email" value="" placeholder="username or email">                                        
+                                                    </div>
+                                                
+                                            <div style="margin-bottom: 25px" class="input-group">
+                                                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                                        <input id="login-password" type="password" class="form-control" name="password" placeholder="password">
+                                                    </div>
+                                                    
+                
+                                                
+                                          
+                
+                
+                                                <div style="margin-top:10px" class="form-group">
+                                                    <!-- Button -->
+                
+                                                    <div class="col-sm-12 controls">
+                                                      <a id="btn-signin" href="#" class="btn btn-success">Sign In  </a>
+                                                      <a id="btn-signup" href="#" class="btn btn-primary">Sign Up</a>
+                
+                                                    </div>
+                                                </div>
+                
+                
+                                           
+                                            </form>     
+                
+                
+                
+                                        </div>                     
+                                    </div>  
+                        </div>
+                       <div class="selectedQuestion">
+                           <div class="questionNum">
+                               
+                           </div>
+                       </div>
+                       <button class="btn btn-primary" id="print">print</button>
+                    </div>
+                    
+        </body>
+        <script>
+       
+                        require('./datadetail.js');
+                      
+                      
+
+        </script>
+           <script>
+               window.$ = window.jQuery = require('jquery');
+window.Tether = require('tether')
+window.Bootstrap = require('bootstrap');
+            const electron = require('electron');
+    const {ipcRenderer} = electron;
+    const BrowserWindow = electron.remote.BrowserWindow;
+ //const mainMenu = electron.remote.mainMenu;
+ const remote = require('electron').remote;
+var mainMenu = remote.getGlobal('mainMenu');
+
+
+    const url = require('url');
+const path = require('path');
+
+    var signInBtn = document.getElementById("btn-signin");
+  var signUpBtn = document.getElementById("btn-signup");
+
+  signUpBtn.addEventListener('click',function(){
+      var email = document.getElementById('login-email').value;
+      var password = document.getElementById('login-password').value;
+      firebase.auth().createUserWithEmailAndPassword(email,password).catch(function(error)
+      {
+        if(error !=null)
+        {
+            document.getElementById("login-alert").style.display = "block";
+            document.getElementById('login-alert').innerHTML = error.message;
+            console.log(error.message);
+            return;
+        }
+        alert('user created');
+      });
+
+  });
+  signInBtn.addEventListener('click',function(){
+    var email = document.getElementById('login-email').value;
+    var password = document.getElementById('login-password').value;
+    firebase.auth().signInWithEmailAndPassword(email,password).then(function(){
+	   // 
+	   console.log("hello");
+	   //createWindow();
+	  $("#loginbox").hide();
+       $("#usernme").html("Hi! "+email);
+       console.log(mainMenu);
+       mainMenu.items[0].submenu.items[0].enabled = true;
+	   //mainWindow.loadURL('page_1.html')
+      //document.location.href="page_1.html";
+        
+    }).catch(function(error)
+    {
+      if(error !=null)
+      {
+        document.getElementById("login-alert").style.display = "block";
+       document.getElementById('login-alert').innerHTML = error.message;
+          console.log(error.message);
+          return;
+      }
+      alert('user created');
+    });
+});
+function createWindow(){
+    
+/*addWindow = new BrowserWindow({
+	width:500,
+	height:300,
+title:'Select Questions'
+});
+addWindow.loadURL(url.format({
+	pathname:path.join(__dirname,'page_1.html'),
+	protocol:'file',
+slashes:true,
+
+}));
+
+addWindow.on('close',function(){
+	addWindow=null;
+});*/
+
+}
+
+ipcRenderer .on('user-data', function(e,arg) { 
+  console.log(arg); 
+  addWindow.close();
+  for(var i=0;i<=arg.length;i++){
+      
+  $(".questionNum").append("<div class='ques'>"+arg[i][0]+"</div><div class='opts'>"+arg[i][1]+"</div>");
+  //Display data
+
+}
+});
+const fs = require('fs')
+  
+$("#print").on("click",function(){
+  let win = new BrowserWindow({show: false})
+  win.loadURL(url.format({
+		pathname:path.join(__dirname,'index.html'),
+		protocol:'file',
+		slashes:true
+	}));
+  win.webContents.on('did-finish-load', () => {
+    // Use default printing options
+    win.webContents.printToPDF({}, (error, data) => {
+      if (error) throw error
+      fs.writeFile('print.pdf', data, (error) => {
+        if (error) throw error
+        console.log('Write PDF successfully.')
+      })
+    })
+  })
+});
+          </script>
+        	
+    </html>

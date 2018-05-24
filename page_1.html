@@ -1,0 +1,292 @@
+<DOCTYPE html>
+    <html>
+        <meta charset="UTF-8">
+        <head>
+        <title>First Page</title>
+        <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+        </head>      
+        <body>
+                <div class="container">
+                    <h3 id="showQuizName"></h3>
+                        
+                        <div class="row mb-4 dashboard" >
+                          <div class="col text-center">                           
+                            <a href="#" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#largeModal">Create Quiz</a>
+                            <a href="#" class="btn btn-lg btn-primary">History</a>
+                            <a href="#" class="btn btn-lg btn-primary">Users</a>
+                            <a href="#" class="btn btn-lg btn-primary">Profile</a>
+                          </div>
+                        </div> 
+                        
+                        <div class="info">
+                          <p>Select Class</p>
+                          <div class="dropdown ">
+                              
+                              <select id="selectClass">
+                                  <option>--Select--</option>
+                                  <option>8</option>
+                                  <option>9</option>
+                                  <option>10</option>
+                              </select>
+                            </div>
+                            <p>Select Subject</p>
+                            <div class="dropdown ">
+                                
+                                <select id="selectSubject">
+                                    <option>--Select--</option>
+                                    <!-- Dependent Select option field -->
+                                    </select>
+                              </div>
+                              <p>Select Topic</p>
+                              <div class="dropdown selectTopic">
+                             
+                                  <select id="selectTopic">
+                                      <option>--Select--</option>
+                                      <!-- Dependent Select option field -->
+                                      </select>
+                                </div>
+                               
+                        </div>
+
+                     
+                            <div class="questions">
+                                
+                               </div>
+                               <button type="button" class="btn btn-primary submit">Submit</button>
+                  
+                      </div>
+  
+                      
+                      <!-- large modal -->
+                      <div class="modal fade" id="largeModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="myModalLabel">New Quiz</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                                    <input id="quizName" type="text" class="form-control" name="quizName" value="" placeholder="Enter the name of the quiz">  
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                              <button type="button" id ="createQuizName" class="btn btn-primary" data-dismiss="modal">Create Quiz</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+
+        </body>
+        <script>
+            require('./datadetail.js');
+          
+
+        </script>
+        <script>
+        window.$ = window.jQuery = require('jquery')
+        window.Tether = require('tether');
+        window.Bootstrap = require('bootstrap');
+        const electron = require('electron');
+        const url = require('url');
+        const path = require('path');
+        const {remote} = require('electron')
+        const Menu = electron.remote.Menu;
+        //const remote = require('electron').remote;
+        var ipcRenderer = require('electron').ipcRenderer; 
+        const BrowserWindow = electron.remote.BrowserWindow;
+        var questionSet=[];
+        var optionSet=[];
+        var questionArray=[];
+        var optionsArray=[];
+        document.addEventListener('DOMContentLoaded', function () {
+          console.log("hello");
+          const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+      	//Insert menu
+	      Menu.setApplicationMenu(mainMenu);
+});
+      
+        //create menu template
+const mainMenuTemplate =[
+	{
+		label:'File',
+		submenu:[
+		{
+			label:'Add item',
+			click(){
+				createAddWindow();
+			}
+		},
+		{
+			label:'Clear Items',
+			click(){
+				mainWindow.webContents.send('item:clear');
+			}
+		},
+		{
+			label:'Quit',
+			accelerator:process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
+			click(){
+				app.quit();
+			}
+		}		
+		]
+	}
+];
+
+//If mac,add empty object to menu
+if(process.platform == 'darwin'){
+ mainMenuTemplate.unshift({});
+}
+
+// Add developer tool item if not in production
+if(process.env.NODE_ENV !== 'production'){
+	mainMenuTemplate.push({
+		label: 'Developer Tools',
+		submenu:[
+		{
+			label:'Toggle DevTools',
+			accelerator:process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
+			click(item,focusedWindow){
+			focusedWindow.toggleDevTools();
+			}
+		},
+		{
+			role:'reload'
+		}
+		]
+	});
+}
+        window.addEventListener('contextmenu', (e) => {
+          e.preventDefault()
+          menu.popup(remote.getCurrentWindow())
+        }, false)
+         var createName =  document.getElementById('createQuizName');
+
+        createName.addEventListener('click',function(){
+         
+         var quizName =  document.getElementById('quizName').value;
+         console.log(quizName);
+        document.getElementById('showQuizName').innerHTML = quizName;
+        $(".dashboard").hide();
+        $(".info").show();
+
+      });
+      global.classSelected = "";
+      var topicSelected ="";
+      $('#selectClass').on('change', function (e) {
+    var optionSelected = $("option:selected", this);
+   classSelected = this.value;
+    switch (classSelected) {
+case "8":
+Subject(8);
+break;
+case "9":
+
+break;
+case "10":
+
+break;
+default:
+$("#selectSubject").empty();
+$("#selectSubject").append("<option>--Select--</option>");
+break;
+
+}});
+$('#selectSubject').on('change', function (e) {
+    var optionSelected = $("option:selected", this);
+   topicSelected = this.value;
+   console.log(classSelected+"==="+topicSelected);
+   $("#selectTopic").empty();
+$("#selectTopic").append("<option>--Select--</option>");
+   var databaseRef = firebase.database().ref('Classes/'+classSelected+'/Subjects/'+topicSelected+'/Topics').orderByKey();
+   
+   databaseRef.once("value")
+ .then(function(snapshot) {
+   // 1 ("name")
+   snapshot.forEach(function(childSnapshot) {
+     var key = childSnapshot.key;
+     $("#selectTopic").append("<option>" + key+ "</option>")
+ });
+
+});
+
+});
+
+function Subject(a){
+    var databaseRef = firebase.database().ref('Classes/'+a+'/Subjects').orderByKey();
+    databaseRef.once("value")
+  .then(function(snapshot) {
+    // 1 ("name")
+    snapshot.forEach(function(childSnapshot) {
+      var key = childSnapshot.key;
+      $("#selectSubject").append("<option>" + key+ "</option>")
+  });
+
+});
+}
+$('#selectTopic').on('change', function (e) {
+  var optionSelected = $("option:selected", this);
+   var topics = this.value;
+
+console.log(topics);
+var i=0;
+   var databaseRef = firebase.database().ref('Classes/'+classSelected+'/Subjects/'+topicSelected+'/Topics/'+topics)
+   console.log(databaseRef);
+   databaseRef.once("value")
+ .then(function(snapshot) {
+   // 1 ("name")
+   snapshot.forEach(function(childSnapshot) {
+     var key = childSnapshot.key;
+     
+     $(".questions").append("<div class='questionSet'><div class='question'><p><strong> Question "+(i+1) +" : </strong></p><p>"+ key+"</p></div><div class='options' id="+i+"><p><strong> Options : </strong></p><p> "+childSnapshot.child("options").val()+"</p></div></div>");
+  
+    // questionSet.push(key);
+   //optionSet.push(childSnapshot.key.parent.getChildren());
+   i++;
+ });
+
+
+$(".questionSet").on("click",function(){
+  $(this).addClass("selected");
+  questionArray.push($(this).find(".question").text());
+ optionsArray.push($(this).find(".options").text());
+  
+ $(".submit").show();
+
+});
+
+});
+
+
+
+  //$(".questions .questionSet .options").append("<p>uyh5iuo5io6io6io</p>");
+
+
+});
+
+$(".submit").on("click",function(){
+  var theResultsMulti = new Array();
+
+
+// BELOW CREATES THE 2D ARRAY FROM 2 SEPERATE ARRAYS THAT CONTAIN YOUR HTML AT EACH INDEX
+for(i=0;i<questionArray.length;i++)
+{
+	var theResults = new Array(); // THIS ARRAY NEEDS TO BE CLEARED OF PREVIOUS VALUES EACH ITERATION SO THAT IT CAN BE PROPERLEY USED BELOW
+	theResults[0] = questionArray[i];
+	theResults[1] = optionsArray[i];
+	theResultsMulti.push(theResults);
+};
+  console.log(theResultsMulti);
+  ipcRenderer.send('user-data', theResultsMulti);
+
+});
+
+
+ 
+        </script>
+        </html>
